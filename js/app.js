@@ -1,10 +1,12 @@
+const X_STEP = 100;
+const Y_STEP = 85;
 // Enemies our player must avoid
 var Enemy = function() {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
-    this.x = getRandomInt(1,100);
-    this.y = getRandomInt(1,100);
-    this.speed = getRandomInt(1,100);;
+    this.x = -150;
+    this.y = 72 * getRandomInt(1,3);
+    this.speed = getRandomInt(50,150);
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
@@ -20,7 +22,14 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    this.x++;
+    if(this.x < 500){
+        this.x+=this.speed*dt;
+    } else {
+        this.y = 55 +(85 * getRandomInt(0,2));
+        this.x = -150;
+        this.speed = getRandomInt(50,150);
+    }
+    //console.log(this.x);
 };
 
 // Draw the enemy on the screen, required method for game
@@ -34,13 +43,14 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 var Player = function(){
     
-    this.x = 100;
-    this.y = 100;
+    this.x = 200;
+    this.y = 300;
 
     this.sprite = 'images/char-boy.png';
 }
 
 Player.prototype.update = function(dt){
+    //this.checkColisions(allEnemies);
     //this.x*=dt;
 }
 
@@ -48,11 +58,40 @@ Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+Player.prototype.checkColisions = function(enemies){
+    for(enemy in enemies){
+        if( this.isAround(enemies[enemy].x, enemies[enemy].y) ){
+            this.x = 200;
+            this.y = 300;
+        }
+    }
+}
+
+Player.prototype.isAround = function(x,y){
+    if(  ((x+40)>this.x && (x-40)<this.x) && ((y-40)<this.y && (y+40)>this.y )  ){
+        return true;
+    } else return false;
+}
+
 Player.prototype.handleInput = function(input){
-    if(input == 'left') { this.x-=10; }
-    if(input == 'right') { this.x+=10; }
-    if(input == 'up') { this.y-=10; }
-    if(input == 'down') { this.y+=10; }
+
+    switch(input){
+        case 'left':
+            if(this.x - X_STEP > -100){ this.x-=X_STEP; }
+            break;
+        case 'right':
+            if(this.x + X_STEP < 500){ this.x += X_STEP; }
+            break;
+        case 'up':
+            if(this.y - Y_STEP > -100){ this.y -= Y_STEP; }
+            break;
+        case 'down':
+            if(this.y + Y_STEP < 450){ this.y += Y_STEP; }
+            break;
+    }
+
+    //console.log("x= " + this.x + ", y= " + this.y);
+
 }
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -60,7 +99,7 @@ Player.prototype.handleInput = function(input){
 var player = new Player();
 var allEnemies = [];
 
-for(var i=0; i<10; i++){
+for(var i=0; i<5; i++){
     allEnemies.push(new Enemy());
 }
 

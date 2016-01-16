@@ -26,7 +26,7 @@ var Engine = (function(global) {
         lastTime;
 
     canvas.width = 505;
-    canvas.height = 506;
+    canvas.height = 546;
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -78,9 +78,30 @@ var Engine = (function(global) {
      * functionality this way (you could just implement collision detection
      * on the entities themselves within your app.js file).
      */
+    function checkCollisions(){
+        for(enemy in allEnemies){
+        if( player.isAround(allEnemies[enemy].x, allEnemies[enemy].y) ){
+            player.x = 200;
+            player.y = 300;
+        }
+    }
+    }
+
+    function resetPlayer(){
+
+    }
+    function checkIfWon(){
+        if(player.y < 10){
+            alert('You Won!!!');
+            player.x = 200;
+            player.y = 300;
+        }
+    }
+
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
+        //checkIfWon();
     }
 
     /* This is called by the update function and loops through all of the
@@ -152,6 +173,7 @@ var Engine = (function(global) {
         });
 
         player.render();
+        checkIfWon();
     }
 
     /* This function does nothing but it could have been a good place to
